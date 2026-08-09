@@ -1,6 +1,5 @@
 import { describe, expect, test } from 'bun:test';
-import { existsSync } from 'node:fs';
-import { mediaModule, projectsModule, vibeModule } from '@navfolio/pages';
+import { projectsModule, vibeModule } from '@navfolio/pages';
 
 import {
   defineNavfolioConfig,
@@ -52,15 +51,13 @@ describe('navfolio plugin config', () => {
     expect(astro.remarkPlugins).toEqual([]);
   });
 
-  test('keeps optional page modules out of protocol defaults', () => {
+  test('enables built-in page modules by default', () => {
     const config = defineNavfolioConfig({});
     const modules = getResolvedPageModules(config);
 
-    expect(modules.map((module) => module.id)).toEqual(['projects']);
+    expect(modules.map((module) => module.id)).toEqual(['projects', 'vibe']);
     expect(getPageModuleRoute(config, 'projects')).toBe('/projects');
     expect(getPageModuleRoute(config, 'vibe')).toBe('/vibe');
-    expect(isPageModuleEnabled(config, 'vibe')).toBe(false);
-    expect(isPageModuleEnabled(config, 'media')).toBe(false);
   });
 
   test('normalizes page module routes', () => {
@@ -70,33 +67,21 @@ describe('navfolio plugin config', () => {
 
   test('supports disabled page modules', () => {
     const config = defineNavfolioConfig({
-      modules: [projectsModule(), vibeModule({ enabled: false }), mediaModule({ enabled: false })],
+      modules: [projectsModule(), vibeModule({ enabled: false })],
     });
 
     expect(isPageModuleEnabled(config, 'projects')).toBe(true);
     expect(isPageModuleEnabled(config, 'vibe')).toBe(false);
-    expect(isPageModuleEnabled(config, 'media')).toBe(false);
     expect(getResolvedPageModules(config).map((module) => module.id)).toEqual(['projects']);
   });
 
   test('supports custom page module routes', () => {
     const config = defineNavfolioConfig({
-      modules: [
-        projectsModule({ route: '/work' }),
-        vibeModule({ route: '/space' }),
-        mediaModule({ route: '/shelf' }),
-      ],
+      modules: [projectsModule({ route: '/work' }), vibeModule({ route: '/space' })],
     });
 
     expect(getPageModuleRoute(config, 'projects')).toBe('/work');
     expect(getPageModuleRoute(config, 'vibe')).toBe('/space');
-    expect(getPageModuleRoute(config, 'media')).toBe('/shelf');
-    expect(getResolvedPageModules(config)[1].routes?.[0]?.entrypoint?.pathname).toContain(
-      '/page-vibe/routes/vibe.astro',
-    );
-    expect(getResolvedPageModules(config)[2].routes?.[0]?.entrypoint?.pathname).toContain(
-      '/page-media/routes/media.astro',
-    );
   });
 
   test('rejects duplicate page module routes', () => {
@@ -107,28 +92,20 @@ describe('navfolio plugin config', () => {
     expect(() => getResolvedPageModules(config)).toThrow('Duplicate Navfolio page module route');
   });
 
-  test('resolves scaffold metadata and templates from enabled page modules', () => {
+  test('resolves scaffold metadata from enabled page modules', () => {
     const config = defineNavfolioConfig({
-      modules: [projectsModule(), vibeModule({ enabled: false }), mediaModule({ enabled: false })],
+      modules: [projectsModule(), vibeModule({ enabled: false })],
     });
 
-    const [scaffold] = getResolvedPageModuleScaffolds(config);
-    if (!scaffold) throw new Error('Expected the Projects scaffold.');
-
-    expect({
-      moduleId: scaffold.moduleId,
-      command: scaffold.command,
-      collection: scaffold.collection,
-      directory: scaffold.directory,
-      defaultExtension: scaffold.defaultExtension,
-    }).toEqual({
-      moduleId: 'projects',
-      command: 'project',
-      collection: 'projects',
-      directory: 'src/content/projects',
-      defaultExtension: 'mdx',
-    });
-    expect(scaffold.template instanceof URL).toBe(true);
-    expect(existsSync(scaffold.template)).toBe(true);
+    expect(getResolvedPageModuleScaffolds(config)).toEqual([
+      {
+        moduleId: 'projects',
+        command: 'project',
+        collection: 'projects',
+        directory: 'src/content/projects',
+        defaultExtension: 'mdx',
+        template: 'project',
+      },
+    ]);
   });
 });

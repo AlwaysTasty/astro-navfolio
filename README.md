@@ -42,32 +42,6 @@ Navfolio 把个人导航、作品集、博客、项目文档和轻量数字花�
 
 ## 快速开始
 
-### 环境要求
-
-除 Bun 和 Git 外，生产构建还**硬依赖 Python 3、FontTools 和 Brotli**。`bun run build` 会根据站点 UI 与内容中的中日韩字符生成 WOFF2 字体子集；缺少这些工具时构建会失败。
-
-建议将 Python 依赖安装在项目虚拟环境中。无需激活虚拟环境，Navfolio 的构建脚本会自动优先使用 `.venv`：
-
-macOS / Linux：
-
-```sh
-python3 -m venv .venv
-.venv/bin/python -m pip install --upgrade pip fonttools brotli
-```
-
-Windows（PowerShell 或命令提示符）：
-
-```powershell
-py -3 -m venv .venv
-.venv\Scripts\python.exe -m pip install --upgrade pip fonttools brotli
-```
-
-可用下面的命令验证字体子集化环境：
-
-```sh
-bun run fonts:ui
-```
-
 安装依赖：
 
 ```sh
@@ -110,18 +84,11 @@ public/images/              Logo、头像、站点预览和静态图片
 ```sh
 bun run post:new my-first-post
 bun run post:new my-interactive-post --mdx
-bun run project:new my-project
 bun run vibe:new today-cloud
-bun run media:new my-favourite-book
-bun run post:new private-draft src/content/drafts
+bun run vibe:new photo-note --mdx
 ```
 
-所有页面内容脚本都遵循
-`bun run <页面简称>:new <文件名> [可选输出目录]`。文件名经安全清理后同时作为
-输出 basename 和初始 `title`；不指定目录时使用对应模板声明的默认内容目录。
-`--md`、`--mdx` 或文件名扩展名可以覆盖模板的默认扩展名。默认 frontmatter 和
-正文位于各页面包发布的 `templates/default.md`，博客模板位于
-`scripts/templates/post.md`，可以直接修改而无需改 TypeScript。
+命令参数是文件 slug，不是最终标题。博客文件会生成到 `src/content/blog/`，Vibe 文件会按现有约定生成到 `src/content/vibe/` 并带日期前缀。
 
 ## 路由
 

@@ -5,7 +5,6 @@ import {
   Building2,
   CalendarDays,
   Clock3,
-  ChevronDown,
   Compass,
   Copy,
   ExternalLink,
@@ -35,6 +34,9 @@ import {
   Tv,
   Pin,
   type Props as LucideProps,
+  Gamepad2,
+  Camera,
+  Instagram,
 } from 'lucide-astro';
 
 interface Props extends Omit<LucideProps, 'name'> {
@@ -46,6 +48,8 @@ interface Props extends Omit<LucideProps, 'name'> {
 const { name, size = 20, class: className, style, ...attrs } = Astro.props;
 
 const icons = {
+  Instagram: Instagram,
+  steam: Gamepad2,
   bilibili: Tv,
   book: BookOpen,
   'book-open-check': BookOpenCheck,
@@ -54,7 +58,6 @@ const icons = {
   building: Building2,
   calendar: CalendarDays,
   clock: Clock3,
-  'chevron-down': ChevronDown,
   commit: GitCommitHorizontal,
   compass: Compass,
   copy: Copy,

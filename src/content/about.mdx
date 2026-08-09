@@ -1,0 +1,83 @@
+---
+title: 'About Me'
+description: 'About Me'
+date: '2026-01-05T10:30:18+08:00'
+draft: false
+showHeroImage: false
+tags:
+  - About
+  - Personal Site
+comments: false
+sidebar:
+  enable: false
+  toc: false
+  relatedPosts: false
+---
+
+import FriendLinkCard from '../components/mdx/FriendLinkCard.astro';
+
+I'm an undergraduate student majoring in [Computing and Finance in Singapore](https://www.ntu.edu.sg/business/education/undergraduate-programme/bachelor-of-applied-computing-in-finance)
+
+## My Life
+
+
+Being borned into a quiet third tier city in China, I was raised by my grandparents in the village as my parents were too busy making a living.
+I've always been thankful that growing up in an environment where I had a lot of freedom and safety to explore things and run around vast plots of farmland gave me totally unconventional insights about life, which became very apparent when I had to move back to the city for preschool.
+
+Alas the preschool life was not for me, I ran into constant troubles with the poor teachers and fellow kids. 
+A series of illness and coughs from the underegulated air quality in the small town (mostly from unclean energy generation and dirty streets) finally convinced my parents to send me to Singapore to study under the care of my grand-aunt while my parents took turns to come to Singapore to find work.
+
+
+## My Investment Journey
+
+I started investing during National Service after a friend bugged me to sign up for a broker app using his referral link. Initially, I just wanted to hold enough capital in blue-chip stocks to claim the referral bonus. But good timing was on my side: I managed to catch the Nvidia rally, making my first thousand dollars with relative ease—which was more than my entire monthly NS allowance at the time. Shortly after, I caught the volatile Nebius crackdown and its subsequent rebound. 
+
+Flushed with quick profits, I began venturing further down the risk curve. I started lurking in Moomoo comment threads and Reddit forums, getting drawn into the high-octane world of penny stocks and meme tickers. When I happened to ride the MGOL short squeeze for massive gains, it completely warped my perception of the stock market. I mistook raw market luck for personal strategy and believed high returns were effortless. Naturally, reality caught up. My subsequent penny stock trades didn't replicate those spectacular runs; instead, I repeatedly fell into classic retail traps, bag-holding pump-and-dumps and losing a substantial portion of my capital.
+
+That drawdown was a harsh wake-up call. Realizing that gambling on forum hype was a guaranteed path to ruin, I forced myself to step back from execution and focus on education. I spent months devouring investment wikis, financial analysis guides, SEC filings, and educational channels on YouTube. I stopped chasing random tips and built a disciplined workflow—learning how to run custom stock screeners, parse clinical trial pipelines, dissect balance sheets, and conduct rigorous Due Diligence (DD) before putting a single dollar at risk.
+
+Through this process, I discovered my niche: **microcap biotech stocks**. While highly volatile, small-cap biotech offered asymmetric risk-to-reward profiles for anyone willing to put in the deep fundamental research that Wall Street ignored. A string of disciplined, compounding plays in this space allowed me to rebuild and grow my portfolio far beyond its initial peaks. Ultimately, those gains allowed me to achieve a major personal milestone: funding the down payment for my first resale HDB flat in Singapore, securing a comfortable home for my parents while generating passive income through partial room rental.
+
+
+
+## 
+
+- `src/config/site.toml`：站点标题、作者资料、导航、首页、主题、搜索和评论配置。
+- `src/content/blog/`：长文、教程和模块使用手册。
+- `src/content/projects/`：项目入口和项目文档。
+- `src/content/vibe/`：更短、更即时的记录。
+- `src/content/about.mdx`：当前这个关于页面。
+
+## 它是如何构建的
+
+项目采用 Astro-first、内容驱动、默认静态输出的方式。你可以直接编辑 Markdown 和 MDX 内容，将其渲染为文章页面，并部署到 GitHub Pages、Vercel、Netlify、Cloudflare Pages，或任何支持 Astro 构建的平台。
+
+视觉语言刻意保持克制：结构柔和、界面低噪、排版可读，交互也以轻量为主，服务阅读而不打断阅读。
+
+
+
+## Friendly Links
+
+<FriendLinkCard
+  items={[
+    {
+      name: 'Theme Author：dodolalorc',
+      url: 'https://dodolalorc.cn/',
+      bio: 'Author Homepage',
+      avatar: 'https://avatars.githubusercontent.com/u/114007020?v=4',
+    },
+    {
+      name: 'Astro',
+      url: 'https://astro.build/',
+      bio: 'Website Static Infrastructure',
+      avatar: 'https://astro.build/assets/press/astro-icon-light-gradient.svg',
+    },
+    {
+      name: 'Bun',
+      url: 'https://bun.com/',
+      bio: 'Website Runtime and Package Manager',
+      avatar: 'https://bun.com/favicon.ico',
+    },
+
+  ]}
+/>

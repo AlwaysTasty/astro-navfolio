@@ -1,4 +1,4 @@
-import tsPlugin from '@typescript-eslint/eslint-plugin';
+import deprecation from 'eslint-plugin-deprecation';
 import tsParser from '@typescript-eslint/parser';
 
 export default [
@@ -14,10 +14,10 @@ export default [
       },
     },
     plugins: {
-      '@typescript-eslint': tsPlugin,
+      deprecation,
     },
     rules: {
-      '@typescript-eslint/no-deprecated': 'error',
+      'deprecation/deprecation': 'error',
     },
   },
 ];

@@ -1,14 +1,9 @@
 import { spawnSync } from 'node:child_process';
 import { existsSync, mkdirSync, readdirSync, readFileSync, writeFileSync } from 'node:fs';
-import { dirname, extname, isAbsolute, join } from 'node:path';
-import { fileURLToPath } from 'node:url';
+import { dirname, extname, join } from 'node:path';
 import { parse } from 'smol-toml';
 import navfolioConfig from '../../navfolio.config';
-import {
-  getResolvedPageModule,
-  getResolvedPageModuleI18n,
-  isPageModuleEnabled,
-} from '../../src/plugins/config';
+import { isPageModuleEnabled } from '../../src/plugins/config';
 
 type FontConfig = {
   en: string;
@@ -18,35 +13,15 @@ type FontConfig = {
 
 const projectRoot = process.cwd();
 const uiCharsPath = join(projectRoot, 'scripts/fonts/ui-chars.txt');
-const friendCirclePath = join(projectRoot, 'public/friend-circle.json');
 const fontConfig = readFontConfig();
 const subsetFontUrl = getSubsetFontUrl(fontConfig.file);
 const outputFontPath = resolveProjectPath(subsetFontUrl);
 const sourceFontPath = resolveProjectPath(fontConfig.file);
 const subsetFontName = `${fontConfig.zh} UI Subset`;
-const isWindows = process.platform === 'win32';
-const venvBinDir = isWindows ? 'Scripts' : 'bin';
-const pythonExe = isWindows ? 'python.exe' : 'python';
-const pyftsubsetExe = isWindows ? 'pyftsubset.exe' : 'pyftsubset';
-const pythonCommands = [
-  join(projectRoot, '.venv', venvBinDir, pythonExe),
-  'python',
-  'python3',
-].filter(
-  (command, index, commands) =>
-    (index === 0 ? existsSync(command) : true) && commands.indexOf(command) === index,
-);
 const contentSource = process.env.NAVFOLIO_CONTENT_SOURCE === 'docs' ? 'docs' : 'content';
 const contentRoot = contentSource === 'docs' ? 'src/docs' : 'src/content';
 const projectsModuleEnabled = isPageModuleEnabled(navfolioConfig, 'projects');
-const resolvedVibeModule = getResolvedPageModule(navfolioConfig, 'vibe');
-const vibeModuleEnabled = Boolean(resolvedVibeModule);
-const vibeRouteEntrypoint = resolvedVibeModule?.routes?.[0]?.entrypoint;
-const vibeRouteSourceFile = vibeRouteEntrypoint ? fileURLToPath(vibeRouteEntrypoint) : undefined;
-const resolvedMediaModule = getResolvedPageModule(navfolioConfig, 'media');
-const mediaModuleEnabled = Boolean(resolvedMediaModule);
-const mediaRouteEntrypoint = resolvedMediaModule?.routes?.[0]?.entrypoint;
-const mediaRouteSourceFile = mediaRouteEntrypoint ? fileURLToPath(mediaRouteEntrypoint) : undefined;
+const vibeModuleEnabled = isPageModuleEnabled(navfolioConfig, 'vibe');
 
 const sourceDirs = [
   'src/pages',
@@ -60,19 +35,14 @@ const sourceFiles = [
   ...(projectsModuleEnabled
     ? ['src/modules/routes/projects-index.astro', 'src/modules/routes/project-detail.astro']
     : []),
-  ...(vibeRouteSourceFile ? [vibeRouteSourceFile] : []),
-  ...(mediaRouteSourceFile ? [mediaRouteSourceFile] : []),
+  ...(vibeModuleEnabled ? ['src/modules/routes/vibe.astro'] : []),
 ];
 const contentFrontmatterDirs = [
   `${contentRoot}/blog`,
   ...(projectsModuleEnabled ? [`${contentRoot}/projects`] : []),
   ...(vibeModuleEnabled ? [`${contentRoot}/vibe`] : []),
-  ...(mediaModuleEnabled ? [`${contentRoot}/media`] : []),
 ];
-const lightweightContentDirs = [
-  ...(vibeModuleEnabled ? [`${contentRoot}/vibe`] : []),
-  ...(mediaModuleEnabled ? [`${contentRoot}/media`] : []),
-];
+const lightweightContentDirs = [...(vibeModuleEnabled ? [`${contentRoot}/vibe`] : [])];
 const lightweightContentFiles = [
   `${contentRoot}/about.mdx`,
   `${contentRoot}/about.md`,
@@ -90,7 +60,6 @@ const frontmatterKeys = new Set([
   'tags',
   'categories',
   'series',
-  'creator',
 ]);
 const cjkPattern =
   /[\p{Script=Han}\p{Script=Hiragana}\p{Script=Katakana}\p{Script=Hangul}\u3000-\u303f\uff00-\uffef]/u;
@@ -198,27 +167,6 @@ function extractFrontmatterFields(frontmatter: string) {
   return values.join('\n');
 }
 
-function collectFriendCircleChars(chars: Set<string>) {
-  if (!existsSync(friendCirclePath)) return;
-
-  try {
-    const data: unknown = JSON.parse(readFileSync(friendCirclePath, 'utf8'));
-    const collectStrings = (value: unknown): void => {
-      if (typeof value === 'string') {
-        collectCjk(chars, value);
-      } else if (Array.isArray(value)) {
-        for (const item of value) collectStrings(item);
-      } else if (value && typeof value === 'object') {
-        for (const nestedValue of Object.values(value)) collectStrings(nestedValue);
-      }
-    };
-
-    collectStrings(data);
-  } catch (error) {
-    console.warn(`Unable to collect friend-circle characters from ${friendCirclePath}:`, error);
-  }
-}
-
 function runSubset() {
   const args = [
     sourceFontPath,
@@ -236,8 +184,8 @@ function runSubset() {
   ];
 
   const commands = [
-    { command: join(projectRoot, '.venv', venvBinDir, pyftsubsetExe), args },
-    ...pythonCommands.map((command) => ({ command, args: ['-m', 'fontTools.subset', ...args] })),
+    { command: 'pyftsubset', args },
+    { command: 'python', args: ['-m', 'fontTools.subset', ...args] },
   ];
 
   for (const { command, args: commandArgs } of commands) {
@@ -250,7 +198,7 @@ function runSubset() {
   }
 
   throw new Error(
-    'Unable to run fonttools. Install it in the project virtual environment with `python3 -m venv .venv && .venv/bin/python -m pip install fonttools brotli`.',
+    'Unable to run fonttools. Install it in a virtual environment with `python -m venv .venv && .venv/bin/python -m pip install fonttools brotli`, then add `.venv/bin` to PATH or make `pyftsubset` available on PATH.',
   );
 }
 
@@ -276,24 +224,24 @@ for record in name_table.names:
 
 font.save(path)
 `;
-  let result;
-  for (const command of pythonCommands) {
-    result = spawnSync(command, ['-c', script, outputFontPath, subsetFontName], {
+  let result = spawnSync('python3', ['-c', script, outputFontPath, subsetFontName], {
+    stdio: 'inherit',
+  });
+
+  if (result.error || result.status !== 0) {
+    result = spawnSync('python', ['-c', script, outputFontPath, subsetFontName], {
       stdio: 'inherit',
     });
-    if (result.status === 0) return;
   }
 
-  throw new Error(
-    `Generated subset font, but failed to sync its internal name to ${subsetFontName}. Ensure Python 3 and fonttools are installed. Error: ${result?.error?.message ?? `status ${result?.status}`}`,
-  );
+  if (result.error || result.status !== 0) {
+    throw new Error(
+      `Generated subset font, but failed to sync its internal name to ${subsetFontName}. Ensure Python 3 and fonttools are installed. Error: ${result.error?.message ?? `status ${result.status}`}`,
+    );
+  }
 }
 
 const chars = new Set<string>();
-
-for (const contribution of getResolvedPageModuleI18n(navfolioConfig)) {
-  collectCjk(chars, JSON.stringify(contribution.messages));
-}
 
 for (const dir of sourceDirs) {
   for (const file of walkFiles(join(projectRoot, dir), sourceExtensions)) {
@@ -302,7 +250,7 @@ for (const dir of sourceDirs) {
 }
 
 for (const file of sourceFiles) {
-  const path = isAbsolute(file) ? file : join(projectRoot, file);
+  const path = join(projectRoot, file);
   if (existsSync(path)) collectCjk(chars, readFileSync(path, 'utf8'));
 }
 
@@ -323,9 +271,6 @@ for (const file of lightweightContentFiles) {
   const path = join(projectRoot, file);
   if (existsSync(path)) collectCjk(chars, readFileSync(path, 'utf8'));
 }
-
-// The sync Action writes RSS-derived display text before this build step.
-collectFriendCircleChars(chars);
 
 const uiChars = [...chars].sort((a, b) => a.codePointAt(0)! - b.codePointAt(0)!).join('');
 if (!uiChars) throw new Error('No CJK UI characters were found for font subsetting.');

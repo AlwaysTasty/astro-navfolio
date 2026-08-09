@@ -1,6 +1,5 @@
 import {
   getConfiguredPageModules,
-  getResolvedPageModuleI18n,
   getPageModuleRoute,
   getResolvedPageModule,
   getResolvedPageModuleScaffolds,
@@ -13,7 +12,6 @@ import type { NavfolioAstroPluginConfig, NavfolioConfig, NavfolioPluginContext }
 
 export {
   getConfiguredPageModules,
-  getResolvedPageModuleI18n,
   getPageModuleRoute,
   getResolvedPageModule,
   getResolvedPageModuleScaffolds,
@@ -50,6 +48,14 @@ function createPageModuleRoutesIntegration(
             }
 
             continue;
+          }
+
+          if (module.id === 'vibe') {
+            injectRoute({
+              pattern: module.route,
+              entrypoint: new URL('../modules/routes/vibe.astro', import.meta.url),
+              prerender: true,
+            });
           }
 
           if (module.id === 'projects') {

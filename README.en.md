@@ -42,32 +42,6 @@ Useful links:
 
 ## Quick Start
 
-### Prerequisites
-
-In addition to Bun and Git, production builds **require Python 3, FontTools, and Brotli**. `bun run build` generates a WOFF2 font subset from the CJK characters used by the UI and content, and fails if those tools are unavailable.
-
-Install the Python tools in a project-local virtual environment. You do not need to activate it: Navfolio's build script automatically prefers `.venv`.
-
-macOS / Linux:
-
-```sh
-python3 -m venv .venv
-.venv/bin/python -m pip install --upgrade pip fonttools brotli
-```
-
-Windows (PowerShell or Command Prompt):
-
-```powershell
-py -3 -m venv .venv
-.venv\Scripts\python.exe -m pip install --upgrade pip fonttools brotli
-```
-
-Verify the font-subsetting setup with:
-
-```sh
-bun run fonts:ui
-```
-
 Install dependencies:
 
 ```sh
@@ -110,20 +84,11 @@ Create content with the built-in scripts:
 ```sh
 bun run post:new my-first-post
 bun run post:new my-interactive-post --mdx
-bun run project:new my-project
 bun run vibe:new today-cloud
-bun run media:new my-favourite-book
-bun run post:new private-draft src/content/drafts
+bun run vibe:new photo-note --mdx
 ```
 
-Every page-content script follows
-`bun run <page-shorthand>:new <filename> [optional-output-directory]`. The
-sanitized filename becomes both the output basename and initial `title`; when
-the directory is omitted, the page template's default content directory is
-used. `--md`, `--mdx`, or an extension in the filename can override the default
-extension. Page packages publish editable defaults in `templates/default.md`;
-the Blog default lives in `scripts/templates/post.md`, so frontmatter and
-starter content can change without editing TypeScript.
+The command argument is the file slug, not the final title. Blog files are created in `src/content/blog/`; Vibe files are created in `src/content/vibe/` with the existing date-prefixed filename convention.
 
 ## Routes
 
