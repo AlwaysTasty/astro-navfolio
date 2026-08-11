@@ -117,7 +117,7 @@ name = "Huiwen"
 handle = "@kiryn_7"
 role = "Larper"
 email = "wang2608@e.ntu.edu.sg"
-website = "https://astro.navfolio.site/"
+website = "https://portfolio-qzoeo8y37-derrick-wangs-projects.vercel.app"
 github = "https://github.com/alwaystasty"
 avatar = "/images/ndd_coke.jpg"
 
@@ -179,7 +179,7 @@ href = "/blog"
 icon = "briefcase"
 title = "Resume"
 subtitle = "My career"
-href = "https://github.com/dodolalorc/navfolio"
+href = "/Resume.pdf"
 
 [[config.home.navigation]]
 icon = "github"
@@ -190,25 +190,25 @@ href = "https://github.com/dodolalorc/astro-navfolio"
 [[config.home.links]]
 label = "LinkedIn"
 icon = "linkedin"
-tooltip = "https://www.linkedin.com/"
+tooltip = "https://www.linkedin.com/in/wanghuiwen"
 copy = false
 
 [[config.home.links]]
 label = "Email"
 icon = "mail"
-tooltip = "hello@navfolio.site"
+tooltip = "wang2608@e.ntu.edu.sg"
 copy = true
 
 [[config.home.links]]
 label = "GitHub"
 icon = "github"
-tooltip = "https://github.com/dodolalorc/astro-navfolio"
+tooltip = "https://github.com/AlwaysTasty/astro-navfolio"
 copy = false
 
 [[config.home.links]]
 label = "Steam"
 icon = "steam"
-tooltip = "https://github.com/dodolalorc/astro-navfolio"
+tooltip = "https://steamcommunity.com/id/thezhaogg/"
 copy = false
 
 [[config.home.links]]
