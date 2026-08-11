@@ -9,16 +9,6 @@
 </p>
 
 <p align="center">
-  <a href="./README.en.md">English</a>
-  ·
-  <a href="./README.md">简体中文</a>
-  ·
-  <a href="https://astro.navfolio.site/">Live site</a>
-  ·
-  <a href="https://astro.navfolio.site/blog/">Module guides</a>
-</p>
-
-<p align="center">
   <img src="./public/images/site-in-devices.png" alt="Navfolio device preview" />
 </p>
 
