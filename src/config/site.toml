@@ -69,19 +69,19 @@ note = "A quiet index of recurring topics, gathered from article frontmatter."
 title = "Series"
 kicker = "Reading paths"
 subtitle = ""
-note = "Connected notes that can be followed in the order they were written."
+note = "There's nothing here yet"
 
 [config.pages.projects]
 title = "Projects"
 kicker = "Project shelf"
-subtitle = "Small tools and site systems."
-note = "A compact shelf for implementation choices, releases, and publishing experiments."
+subtitle = "Showcase of some things I've worked on"
+note = "Embarrasingly empty"
 
 [config.pages.vibe]
 title = "vibe"
 kicker = ""
-subtitle = "Life and coding fragments."
-note = "Not formal enough for blog posts, but still part of the story."
+subtitle = "IDK what's this for either"
+note = "Please click on something else"
 showTrail = true
 
 [config.comments.giscus]
