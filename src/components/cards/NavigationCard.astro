@@ -27,18 +27,26 @@ function withBase(href: string) {
 <article class="nav-card">
   <nav aria-label="identity websites">
     {
-      items.map((item) => (
-        <a class="nav-item" href={withBase(item.href)}>
-          <span class="nav-icon">
-            <Icon name={item.icon} />
-          </span>
-          <span>
-            <strong>{item.title}</strong>
-            <small>{item.subtitle}</small>
-          </span>
-          <Icon name="external" />
-        </a>
-      ))
+      items.map((item) => {
+        const isExternal = item.href.startsWith('http') || item.href.endsWith('.pdf');
+        return (
+          <a
+            class="nav-item"
+            href={withBase(item.href)}
+            target={isExternal ? '_blank' : undefined}
+            rel={isExternal ? 'noreferrer noopener' : undefined}
+          >
+            <span class="nav-icon">
+              <Icon name={item.icon} />
+            </span>
+            <span>
+              <strong>{item.title}</strong>
+              <small>{item.subtitle}</small>
+            </span>
+            <Icon name="external" />
+          </a>
+        );
+      })
     }
   </nav>
 </article>

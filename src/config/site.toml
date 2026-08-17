@@ -4,7 +4,7 @@ description = "Kiryn's Personal Website"
 pageTitle = "Kiryn's Space"
 pageDescription = "Some thoughts and stuff people might care"
 url = "https://astro.navfolio.site"
-repository = "https://github.com/dodolalorc/astro-navfolio"
+repository = "https://github.com/AlwaysTasty/astro-navfolio"
 footerNote = "Original Template by dodolalorc"
 
 [config.theme]
