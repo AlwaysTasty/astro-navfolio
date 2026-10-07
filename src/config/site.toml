@@ -148,7 +148,7 @@ href = "/about"
 [config.home]
 
 [config.home.quote]
-text = ["More than I need, less than I want"]
+text = ["The West End Town a Dead End World"]
 
 [config.home.intro]
 title = "Internet "
