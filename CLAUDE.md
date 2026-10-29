@@ -110,6 +110,7 @@ Also test desktop, which should never redirect.
    - cash runway and dilution risk
    - what would prove the thesis wrong
 
+   **Shell is set up:** copy `src/content/blog/_thesis-template.md` (the `_` keeps it unpublished) to a new name without the `_`, then fill it in. Planned pieces: IXHL (Phase 2, closed), NBIS (European assets split from sanctioned Russian entity, closed), DHT/FRO/NAT tankers, MGOL (post-mortem only), SLS (current largest holding; most compliance-sensitive, publish last). None has a valuation model, so posts must say "qualitative" and must not claim rNPV/DCF. The owner traded these before university, so label them retrospective. Blog nav and homepage card stay hidden until the first post is published.
    A post-mortem on a losing trade is also worth writing. When the first post is published, re-add Blog to `topNav` and to the homepage navigation cards.
 3. **Project media:** photos or diagrams and GitHub links for each project. The `heroImage` frontmatter field exists, but `showHeroImage` is currently `false`.
 4. **Headshot:** replace the dog avatar in `site.toml` (`profile.avatar`) and in `src/data/card.ts`.

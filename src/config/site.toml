@@ -43,14 +43,14 @@ show_on_posts = true
 [config.search]
 enabled = true
 shortcut = "mod+k"
-placeholder = "Search notes..."
+placeholder = "Search..."
 maxResults = 6
 
 [config.pages.blog]
-title = "Writing notes"
-kicker = "Notebook archive"
-subtitle = "Notes from the margins."
-note = "Field notes, drafts, and technical margins arranged for slow browsing."
+title = "Research"
+kicker = "Equity research"
+subtitle = "Catalyst-driven small-cap and biotech write-ups."
+note = "Qualitative case studies with supporting figures. Not investment advice."
 postsPerPage = 6
 # date-fns 使用的日期格式模板。
 dateFormat = "yyyy-MM-dd"
