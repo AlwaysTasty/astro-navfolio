@@ -1,0 +1,151 @@
+---
+import BaseHead from '../components/BaseHead.astro';
+import Icon from '../components/Icon.astro';
+import { card } from '../data/card';
+import { getSiteConfig } from '../data/site';
+import { getHtmlLang } from '../utils/ui-text';
+
+const siteConfig = await getSiteConfig();
+const { fullName } = card;
+
+const links = [
+  { label: 'Save contact', icon: 'pin', href: '/contact.vcf', primary: true },
+  { label: 'Résumé', icon: 'briefcase', href: card.resume },
+  { label: 'LinkedIn', icon: 'linkedin', href: card.linkedin },
+  { label: 'Email', icon: 'mail', href: `mailto:${card.email}` },
+  { label: 'GitHub', icon: 'github', href: card.github },
+  { label: 'Full website', icon: 'compass', href: card.site },
+];
+---
+
+<!doctype html>
+<html lang={getHtmlLang(siteConfig)} data-palette={siteConfig.theme.palette}>
+  <head>
+    <BaseHead title={fullName} description={`${card.headline}. ${card.tagline}`} />
+  </head>
+  <body>
+    <main class="card-shell">
+      <section class="intro-card" aria-labelledby="card-name">
+        <img class="avatar" src={card.avatar} alt="" width="112" height="112" />
+        <h1 id="card-name">{fullName}</h1>
+        <p class="headline">{card.headline}</p>
+        <p class="tagline">{card.tagline}</p>
+
+        <nav class="card-links" aria-label="Contact and links">
+          {
+            links.map((link) => (
+              <a
+                href={link.href}
+                class:list={['card-link', { primary: link.primary }]}
+                {...(link.href.startsWith('http') && { target: '_blank', rel: 'noopener' })}
+              >
+                <Icon name={link.icon} size={18} />
+                <span>{link.label}</span>
+              </a>
+            ))
+          }
+        </nav>
+      </section>
+    </main>
+  </body>
+</html>
+
+<style>
+  .card-shell {
+    display: grid;
+    min-height: 100svh;
+    place-items: center;
+    padding: 32px 16px;
+    background: var(--paper-bg);
+  }
+
+  .intro-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: min(100%, 400px);
+    text-align: center;
+  }
+
+  .avatar {
+    width: 112px;
+    height: 112px;
+    border: 1px solid var(--paper-line);
+    border-radius: 50%;
+    object-fit: cover;
+  }
+
+  h1 {
+    margin: 18px 0 0;
+    color: var(--paper-ink);
+    font-size: 1.9rem;
+    line-height: 1.15;
+  }
+
+  .headline {
+    margin: 8px 0 0;
+    color: var(--paper-accent);
+    font-family: var(--font-ui-label);
+    font-size: 0.92rem;
+    font-weight: 700;
+  }
+
+  .tagline {
+    margin: 12px 0 0;
+    color: var(--paper-ink-soft);
+    font-size: 0.98rem;
+    line-height: 1.6;
+  }
+
+  .card-links {
+    display: grid;
+    gap: 10px;
+    width: 100%;
+    margin-top: 28px;
+  }
+
+  .card-link {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    min-height: 52px;
+    padding: 10px 16px;
+    border: 1px solid var(--paper-line);
+    border-radius: 12px;
+    background: var(--paper-control);
+    color: var(--paper-ink);
+    font-family: var(--font-ui-label);
+    font-size: 0.98rem;
+    font-weight: 700;
+    text-decoration: none;
+    transition:
+      transform 180ms ease,
+      border-color 180ms ease,
+      background 180ms ease;
+  }
+
+  .card-link:hover,
+  .card-link:focus-visible {
+    border-color: var(--paper-line-strong);
+    background: var(--paper-control-hover);
+    transform: translateY(-1px);
+  }
+
+  .card-link:focus-visible {
+    outline: 2px solid var(--paper-accent);
+    outline-offset: 3px;
+  }
+
+  .card-link.primary {
+    border-color: var(--paper-accent);
+    background: var(--paper-accent);
+    color: var(--paper-bg);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .card-link {
+      transition: none;
+    }
+  }
+</style>
