@@ -186,6 +186,12 @@ subtitle = "My career"
 href = "/Resume.pdf"
 
 [[config.home.navigation]]
+icon = "link"
+title = "Contact Card"
+subtitle = "Save my contact"
+href = "/card"
+
+[[config.home.navigation]]
 icon = "github"
 title = "Source Template"
 subtitle = "Credits to dodolalorc"

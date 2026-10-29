@@ -21,6 +21,7 @@ const htmlLang = getHtmlLang(siteConfig);
 <html lang={htmlLang} data-palette={palette}>
   <head>
     <BaseHead title={title} description={description} />
+    <slot name="head" />
   </head>
   <body>
     <BlogTopNav />

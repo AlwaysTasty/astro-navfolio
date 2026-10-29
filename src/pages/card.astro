@@ -14,7 +14,8 @@ const links = [
   { label: 'LinkedIn', icon: 'linkedin', href: card.linkedin },
   { label: 'Email', icon: 'mail', href: `mailto:${card.email}` },
   { label: 'GitHub', icon: 'github', href: card.github },
-  { label: 'Full website', icon: 'compass', href: card.site },
+  // ?full=1 tells the main site to stop sending this visitor back to the card.
+  { label: 'Full website', icon: 'compass', href: `${card.site}/?full=1` },
 ];
 ---
 
@@ -37,7 +38,8 @@ const links = [
               <a
                 href={link.href}
                 class:list={['card-link', { primary: link.primary }]}
-                {...(link.href.startsWith('http') && { target: '_blank', rel: 'noopener' })}
+                {...(link.href.startsWith('http') &&
+                  !link.href.startsWith(card.site) && { target: '_blank', rel: 'noopener' })}
               >
                 <Icon name={link.icon} size={18} />
                 <span>{link.label}</span>

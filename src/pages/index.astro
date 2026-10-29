@@ -13,6 +13,32 @@ const { home, profile, site } = await getSiteConfig();
 ---
 
 <BaseLayout title={site.pageTitle} description={site.pageDescription}>
+  <script is:inline slot="head">
+    // Phones landing on the homepage see the intro card first, until they pick "Full website" there (?full=1).
+    (() => {
+      const key = 'skip-intro-card';
+      const params = new URLSearchParams(location.search);
+      try {
+        if (params.has('full')) {
+          localStorage.setItem(key, '1');
+          params.delete('full');
+          history.replaceState(
+            null,
+            '',
+            location.pathname + (params.size ? `?${params}` : '') + location.hash,
+          );
+          return;
+        }
+        if (localStorage.getItem(key)) return;
+      } catch {
+        if (params.has('full')) return;
+      }
+      // Only on a real page load of "/", not when tapping Home while already browsing the site.
+      const entry = performance.getEntriesByType('navigation')[0];
+      const loadedHere = !entry || new URL(entry.name).pathname === location.pathname;
+      if (loadedHere && matchMedia('(max-width: 720px)').matches) location.replace('/card');
+    })();
+  </script>
   <div class="publication-bg" aria-hidden="true"></div>
   <DashboardFlow>
     <Fragment slot="profile">
