@@ -21,8 +21,7 @@
     "vibe:new": "bun scripts/new-content.ts vibe",
     "lint": "eslint .",
     "format": "prettier --write --ignore-unknown .",
-    "format:check": "bun run lint && prettier --check --ignore-unknown .",
-    "prepare": "husky"
+    "format:check": "bun run lint && prettier --check --ignore-unknown ."
   },
   "dependencies": {
     "@astrojs/mdx": "^7.0.2",
@@ -30,7 +29,7 @@
     "@astrojs/sitemap": "^3.7.3",
     "@expressive-code/plugin-collapsible-sections": "^0.44.0",
     "@expressive-code/plugin-line-numbers": "^0.44.0",
-    "@fontsource/maple-mono": "^5.2.6",
+    "@fontsource/inter": "^5.3.0",
     "@navfolio/pages": "github:navfolio/pages",
     "@navfolio/plugin-markdown": "github:navfolio/plugin-markdown",
     "@tailwindcss/vite": "^4.3.2",

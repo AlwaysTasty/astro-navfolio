@@ -1,8 +1,8 @@
 [config.site]
-title = "Kiryn's Space"
-description = "Kiryn's Personal Website"
-pageTitle = "Kiryn's Space"
-pageDescription = "Some thoughts and stuff people might care"
+title = "Wang Huiwen"
+description = "Wang Huiwen – Computing & Finance at NTU"
+pageTitle = "Wang Huiwen"
+pageDescription = "Computing & Finance undergraduate at NTU focused on fundamental equity research, small-cap biotech, and building software and hardware systems."
 url = "https://www.huiwen.fyi"
 repository = "https://github.com/AlwaysTasty/astro-navfolio"
 footerNote = "Original Template by dodolalorc"
@@ -16,7 +16,7 @@ lang = "en"
 
 [config.fonts]
 # 英文与代码感 UI 字体
-en = "Maple Mono"
+en = "Inter"
 code = "Monaco"
 # 模板内可直接选择：ChillRoundM、LXGW WenKai
 # 中文阅读字体
@@ -74,8 +74,8 @@ note = "There's nothing here yet"
 [config.pages.projects]
 title = "Projects"
 kicker = "Project shelf"
-subtitle = "Showcase of some things I've worked on"
-note = "Embarrasingly empty"
+subtitle = "Things I've built and worked on"
+note = "Software, hardware and finance projects."
 
 [config.pages.vibe]
 title = "vibe"
@@ -113,9 +113,9 @@ pageview = true
 comment = true
 
 [config.profile]
-name = "Huiwen"
-handle = "@kiryn_7"
-role = "Larper"
+name = "Wang Huiwen"
+handle = "Computing & Finance @ NTU"
+role = "Equity Research · Systems Dev"
 email = "wang2608@e.ntu.edu.sg"
 website = "https://www.huiwen.fyi"
 github = "https://github.com/alwaystasty"
@@ -129,17 +129,10 @@ href = "/"
 label = "Resume"
 href = "/Resume.pdf"
 
-[[config.topNav.links]]
-label = "Blog"
-href = "/blog"
-
+# Blog is hidden until the first post is published; re-add { label = "Blog", href = "/blog" } then.
 [[config.topNav.links]]
 label = "Projects"
 module = "projects"
-
-[[config.topNav.links]]
-label = "Vibe"
-module = "vibe"
 
 [[config.topNav.links]]
 label = "About"
@@ -151,12 +144,12 @@ href = "/about"
 text = ["The West End Town a Dead End World"]
 
 [config.home.intro]
-title = "Internet "
-name = "Stranger"
+title = "I'm "
+name = "Huiwen"
 body = [
-  "I'm a computing and finance undergraduate in Singapore keen in finding exploits, diy-ing electronics and politics",
-  "I also trade and invest in my spare time, with a niche in finding asymetrically priced micro-cap biotech stocks",
-  "Achieving a +580% TWR vs. S&P 500 over the same time period, generating >420% in benchmark Jensen's Alpha with a 6 digit portfolio",
+  "I'm a Computing & Finance undergraduate at NTU, focused on fundamental equity research and building software and hardware systems.",
+  "I run a self-directed portfolio specialising in catalyst-driven small- and micro-cap biotech: clinical-trial probabilities, rNPV valuation and cash-runway analysis.",
+  "Since April 2024 it has returned +580% on a time-weighted basis, compared with the S&P 500 over the same period.",
 ]
 
 [config.home.latest]
@@ -169,20 +162,14 @@ dateArchiveBaseHref = ""
 
 [[config.home.navigation]]
 icon = "compass"
-title = "Portfolio"
-subtitle = "Selected works"
+title = "Projects"
+subtitle = "Selected work"
 href = "/projects"
-
-[[config.home.navigation]]
-icon = "pen"
-title = "Blog"
-subtitle = "Random thoughts"
-href = "/blog"
 
 [[config.home.navigation]]
 icon = "briefcase"
 title = "Resume"
-subtitle = "My career"
+subtitle = "Experience & education"
 href = "/Resume.pdf"
 
 [[config.home.navigation]]
@@ -190,12 +177,6 @@ icon = "link"
 title = "Contact Card"
 subtitle = "Save my contact"
 href = "/card"
-
-[[config.home.navigation]]
-icon = "github"
-title = "Source Template"
-subtitle = "Credits to dodolalorc"
-href = "https://github.com/dodolalorc/astro-navfolio"
 
 [[config.home.links]]
 label = "LinkedIn"
@@ -212,35 +193,17 @@ copy = true
 [[config.home.links]]
 label = "GitHub"
 icon = "github"
-tooltip = "https://github.com/AlwaysTasty/astro-navfolio"
-copy = false
-
-[[config.home.links]]
-label = "Steam"
-icon = "steam"
-tooltip = "https://steamcommunity.com/id/thezhaogg/"
-copy = false
-
-[[config.home.links]]
-label = "Instagram"
-icon = "Instagram"
-tooltip = "https://www.instagram.com/kiryn_7/"
-copy = false
-
-[[config.home.links]]
-label = "X"
-icon = "x"
-tooltip = "" # 留空会隐藏这个链接项。
+tooltip = "https://github.com/AlwaysTasty"
 copy = false
 
 [[config.home.doing]]
-text = "Following SLS REGAL Trial updates for catalyst trading opportunities"
+text = "Following SLS REGAL trial updates for catalyst-driven opportunities"
 mark = "01"
 
 [[config.home.doing]]
-text = "Joined Investment Banking Club Asset Management Arm"
+text = "Analyst-in-Training, Investment Banking Club (Asset Management)"
 mark = "02"
 
 [[config.home.doing]]
-text = "House Hunting in Punggol & Sengkang for my first HDB"
+text = "Director, Investment Interactive Club Investment Academy"
 mark = "03"
