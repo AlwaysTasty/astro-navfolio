@@ -1,5 +1,6 @@
 ---
 import { Github, ListTree, Menu, Moon, Sun } from 'lucide-astro';
+import SpotifyNowPlaying from '../presence/SpotifyNowPlaying.astro';
 import SiteSearch from './SiteSearch.astro';
 import TocTree from './TocTree.astro';
 import { getRouteLabels, getSiteConfig, getTopNavLinks } from '../../data/site';
@@ -126,6 +127,7 @@ const shouldShowTocAction = showTocIcon && tocItems.length > 0;
   </nav>
 
   <div class="nav-actions" aria-label="Page actions">
+    <SpotifyNowPlaying />
     <a
       href={site.repository}
       target="_blank"

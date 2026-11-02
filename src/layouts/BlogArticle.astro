@@ -3,6 +3,7 @@ import { type CollectionEntry, getCollection } from 'astro:content';
 import ArticleHeader from '../components/article/ArticleHeader.astro';
 import BlogTopNav from '../components/blog/BlogTopNav.astro';
 import RelatedPosts from '../components/blog/RelatedPosts.astro';
+import PresenceDock from '../components/presence/PresenceDock.astro';
 import ScrollToTopButton from '../components/ScrollToTopButton.astro';
 import TableOfContents from '../components/blog/TableOfContents.astro';
 import BaseHead from '../components/BaseHead.astro';
@@ -228,6 +229,7 @@ const hasSidebar = shouldRenderSidebar && hasToc;
       }
     </main>
     <ScrollToTopButton />
+    <PresenceDock />
     <ZoomableImage />
     <MermaidRenderer />
   </body>

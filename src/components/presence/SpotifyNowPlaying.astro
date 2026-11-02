@@ -1,0 +1,113 @@
+---
+// Navbar pill with my current or last-played Spotify track, from the /api/spotify function.
+---
+
+<a
+  class="spotify-pill"
+  data-spotify-pill
+  href="https://open.spotify.com"
+  target="_blank"
+  rel="noreferrer"
+  hidden
+>
+  <img data-spotify-art alt="" width="28" height="28" />
+  <span data-spotify-text></span>
+</a>
+
+<script>
+  interface Track {
+    isPlaying: boolean;
+    title: string;
+    artist: string;
+    art: string | null;
+    url: string;
+  }
+
+  const POLL_MS = 30_000;
+  // Undefined until the first reply. An error or empty reply hides the pill.
+  let track: Track | undefined;
+  let timer = 0;
+
+  const render = () => {
+    for (const pill of document.querySelectorAll<HTMLAnchorElement>('[data-spotify-pill]')) {
+      pill.hidden = !track;
+      if (!track) continue;
+      const label = track.isPlaying ? 'Now playing' : 'Last played';
+      pill.href = track.url;
+      pill.dataset.playing = String(track.isPlaying);
+      pill.title = `${label} on Spotify: ${track.title} by ${track.artist}`;
+      const art = pill.querySelector<HTMLImageElement>('[data-spotify-art]')!;
+      art.hidden = !track.art;
+      if (track.art) art.src = track.art;
+      pill.querySelector('[data-spotify-text]')!.textContent =
+        `${track.isPlaying ? '' : 'Last played: '}${track.title} – ${track.artist}`;
+    }
+  };
+
+  const poll = async () => {
+    try {
+      const res = await fetch('/api/spotify');
+      const data = res.ok ? await res.json() : {};
+      track = data.title ? data : undefined;
+    } catch {
+      track = undefined;
+    }
+    render();
+  };
+
+  const schedule = () => {
+    window.clearInterval(timer);
+    if (document.hidden) return;
+    void poll();
+    timer = window.setInterval(poll, POLL_MS);
+  };
+
+  document.addEventListener('visibilitychange', schedule);
+  // The header is re-created on each client-side navigation, so repaint from the last reply.
+  document.addEventListener('astro:page-load', render);
+  schedule();
+</script>
+
+<style is:global>
+  .blog-top-nav .nav-actions a.spotify-pill:not([hidden]) {
+    display: inline-flex;
+    width: auto;
+    max-width: 190px;
+    gap: 8px;
+    align-items: center;
+    padding: 0 12px 0 5px;
+    color: var(--paper-ink-soft);
+    font-size: 0.78rem;
+    font-weight: 600;
+    text-decoration: none;
+  }
+
+  .blog-top-nav .nav-actions a.spotify-pill[data-playing='false'] {
+    color: var(--paper-ink-faint);
+  }
+
+  .blog-top-nav .nav-actions a.spotify-pill img {
+    flex: 0 0 auto;
+    width: 28px;
+    height: 28px;
+    border-radius: 5px;
+    object-fit: cover;
+  }
+
+  .blog-top-nav .nav-actions a.spotify-pill img[hidden] {
+    display: none;
+  }
+
+  .blog-top-nav .nav-actions a.spotify-pill span {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  /* The bar is too narrow for the pill below this width. */
+  @media (max-width: 959px) {
+    .blog-top-nav .nav-actions a.spotify-pill:not([hidden]) {
+      display: none;
+    }
+  }
+</style>
