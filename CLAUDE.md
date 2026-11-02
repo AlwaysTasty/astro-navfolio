@@ -122,6 +122,10 @@ Also test desktop, which should never redirect.
    - The `vibe` module is still enabled in `navfolio.config.ts`, though unlinked.
    - The footer reads "Original Template by dodolalorc". Keep the credit.
 
+## Live presence widgets
+
+The owner approved these despite the no-gaming rule above. Spotify record (navbar on wide screens, bottom-left above the Discord ball on narrow ones) reads `api/spotify.js` (Vercel function; env vars in `.env.example`). The Discord ball reads lanyard.rest using `src/data/presence.ts`. The Spotify profile icon in the homepage socials stays hidden until its `tooltip` URL is set in `site.toml`. Steam is not built.
+
 ## How to work in this repo
 
 - Make the smallest change that does the job. Most content changes are a `site.toml` or Markdown edit, with no component changes.

@@ -19,7 +19,8 @@ export function GET() {
   return new Response(vcard, {
     headers: {
       'Content-Type': 'text/vcard; charset=utf-8',
-      'Content-Disposition': `attachment; filename="${card.firstName}-${card.lastName}.vcf"`,
+      // inline lets iOS Safari offer "Add to Contacts" directly; most Android browsers still download it.
+      'Content-Disposition': `inline; filename="${card.firstName}-${card.lastName}.vcf"`,
     },
   });
 }

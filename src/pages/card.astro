@@ -49,6 +49,23 @@ const links = [
         </nav>
       </section>
     </main>
+    <script>
+      // Android browsers only download .vcf files. The share sheet can hand it straight to Contacts.
+      document
+        .querySelector<HTMLAnchorElement>('a[href="/contact.vcf"]')
+        ?.addEventListener('click', async (event) => {
+          if (!navigator.canShare) return;
+          event.preventDefault();
+          try {
+            const blob = await (await fetch('/contact.vcf')).blob();
+            const file = new File([blob], 'Wang-Huiwen.vcf', { type: 'text/vcard' });
+            if (!navigator.canShare({ files: [file] })) throw new Error('unsupported');
+            await navigator.share({ files: [file] });
+          } catch (error) {
+            if ((error as Error).name !== 'AbortError') location.href = '/contact.vcf';
+          }
+        });
+    </script>
   </body>
 </html>
 

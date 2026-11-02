@@ -39,6 +39,8 @@ import {
   Instagram,
 } from 'lucide-astro';
 
+import Spotify from './icons/Spotify.astro';
+
 interface Props extends Omit<LucideProps, 'name'> {
   name: string;
   size?: number | string;
@@ -50,6 +52,7 @@ const { name, size = 20, class: className, style, ...attrs } = Astro.props;
 const icons = {
   Instagram: Instagram,
   steam: Gamepad2,
+  spotify: Spotify,
   bilibili: Tv,
   book: BookOpen,
   'book-open-check': BookOpenCheck,

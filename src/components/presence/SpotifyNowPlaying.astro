@@ -1,18 +1,29 @@
 ---
-// Navbar pill with my current or last-played Spotify track, from the /api/spotify function.
+// Spinning record for my current or last-played Spotify track (from /api/spotify).
+// "nav" sits in the top bar on wide screens; "dock" sits above the Discord ball on narrow ones.
+interface Props {
+  variant: 'nav' | 'dock';
+}
+
+const { variant } = Astro.props;
 ---
 
-<a
-  class="spotify-pill"
-  data-spotify-pill
-  href="https://open.spotify.com"
-  target="_blank"
-  rel="noreferrer"
-  hidden
->
-  <img data-spotify-art alt="" width="28" height="28" />
-  <span data-spotify-text></span>
-</a>
+<div class="spotify-wrap" data-spotify-wrap data-variant={variant} hidden>
+  <button
+    class="spotify-disc"
+    type="button"
+    aria-label="Spotify: now playing"
+    aria-expanded="false"
+  >
+    <span class="spotify-record" aria-hidden="true">
+      <img data-spotify-art alt="" width="14" height="14" />
+    </span>
+  </button>
+  <div class="spotify-box" role="status">
+    <b data-spotify-label>Now playing</b>
+    <span data-spotify-text></span>
+  </div>
+</div>
 
 <script>
   interface Track {
@@ -20,27 +31,25 @@
     title: string;
     artist: string;
     art: string | null;
-    url: string;
   }
 
   const POLL_MS = 30_000;
-  // Undefined until the first reply. An error or empty reply hides the pill.
+  // Undefined until the first reply. An error or empty reply hides the record.
   let track: Track | undefined;
   let timer = 0;
 
   const render = () => {
-    for (const pill of document.querySelectorAll<HTMLAnchorElement>('[data-spotify-pill]')) {
-      pill.hidden = !track;
+    for (const wrap of document.querySelectorAll<HTMLElement>('[data-spotify-wrap]')) {
+      wrap.hidden = !track;
       if (!track) continue;
       const label = track.isPlaying ? 'Now playing' : 'Last played';
-      pill.href = track.url;
-      pill.dataset.playing = String(track.isPlaying);
-      pill.title = `${label} on Spotify: ${track.title} by ${track.artist}`;
-      const art = pill.querySelector<HTMLImageElement>('[data-spotify-art]')!;
+      wrap.dataset.playing = String(track.isPlaying);
+      wrap.querySelector('[data-spotify-label]')!.textContent = label;
+      wrap.querySelector('[data-spotify-text]')!.textContent = `${track.title} – ${track.artist}`;
+      wrap.querySelector('button')!.setAttribute('aria-label', `Spotify: ${label.toLowerCase()}`);
+      const art = wrap.querySelector<HTMLImageElement>('[data-spotify-art]')!;
       art.hidden = !track.art;
       if (track.art) art.src = track.art;
-      pill.querySelector('[data-spotify-text]')!.textContent =
-        `${track.isPlaying ? '' : 'Last played: '}${track.title} – ${track.artist}`;
     }
   };
 
@@ -63,51 +72,174 @@
   };
 
   document.addEventListener('visibilitychange', schedule);
+  // Click toggles the box (needed on touch); hover handles it with a mouse via CSS.
+  document.addEventListener('click', (event) => {
+    const hit = (event.target as Element).closest<HTMLElement>('[data-spotify-wrap]');
+    for (const wrap of document.querySelectorAll<HTMLElement>('[data-spotify-wrap]')) {
+      const open = wrap === hit && wrap.dataset.open !== 'true';
+      wrap.dataset.open = String(open);
+      wrap.querySelector('button')!.setAttribute('aria-expanded', String(open));
+    }
+  });
   // The header is re-created on each client-side navigation, so repaint from the last reply.
   document.addEventListener('astro:page-load', render);
   schedule();
 </script>
 
 <style is:global>
-  .blog-top-nav .nav-actions a.spotify-pill:not([hidden]) {
-    display: inline-flex;
-    width: auto;
-    max-width: 190px;
-    gap: 8px;
-    align-items: center;
-    padding: 0 12px 0 5px;
-    color: var(--paper-ink-soft);
-    font-size: 0.78rem;
-    font-weight: 600;
-    text-decoration: none;
+  .spotify-wrap {
+    position: relative;
   }
 
-  .blog-top-nav .nav-actions a.spotify-pill[data-playing='false'] {
-    color: var(--paper-ink-faint);
+  .blog-top-nav .nav-actions .spotify-wrap button.spotify-disc,
+  .spotify-wrap button.spotify-disc {
+    display: grid;
+    place-items: center;
+    width: 38px;
+    height: 38px;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    cursor: pointer;
   }
 
-  .blog-top-nav .nav-actions a.spotify-pill img {
-    flex: 0 0 auto;
-    width: 28px;
-    height: 28px;
-    border-radius: 5px;
+  .spotify-record {
+    position: relative;
+    display: grid;
+    place-items: center;
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    background:
+      radial-gradient(circle, transparent 0 24%, rgba(0, 0, 0, 0.25) 24% 26%, transparent 26%),
+      conic-gradient(
+        from 20deg,
+        transparent 0 18%,
+        rgba(255, 255, 255, 0.22) 25%,
+        transparent 32% 68%,
+        rgba(255, 255, 255, 0.16) 75%,
+        transparent 82%
+      ),
+      repeating-radial-gradient(circle, #0f0f10 0 1.2px, #232325 1.2px 2.4px);
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.35);
+    animation: spotify-spin 4s linear infinite;
+  }
+
+  .spotify-wrap[data-playing='false'] .spotify-record {
+    animation-play-state: paused;
+  }
+
+  /* Album art is the record's centre label; the dot is the spindle hole. */
+  .spotify-record img {
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
     object-fit: cover;
   }
 
-  .blog-top-nav .nav-actions a.spotify-pill img[hidden] {
-    display: none;
+  .spotify-record img[hidden] {
+    display: block;
+    background: var(--paper-accent);
   }
 
-  .blog-top-nav .nav-actions a.spotify-pill span {
+  .spotify-record::after {
+    position: absolute;
+    width: 3px;
+    height: 3px;
+    border-radius: 50%;
+    background: var(--paper-surface, #fff);
+    content: '';
+  }
+
+  .spotify-box {
+    position: absolute;
+    z-index: 5;
+    display: block;
+    width: max-content;
+    max-width: min(280px, calc(100vw - 96px));
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
+    padding: 9px 13px;
+    border: 1px solid var(--paper-line);
+    border-radius: 14px;
+    background: var(--paper-bg);
+    box-shadow: var(--paper-shadow-lift);
+    color: var(--paper-ink);
+    font-size: 0.8rem;
+    line-height: 1.4;
+    opacity: 0;
+    pointer-events: none;
+    transition:
+      opacity 160ms ease,
+      transform 160ms ease;
   }
 
-  /* The bar is too narrow for the pill below this width. */
-  @media (max-width: 959px) {
-    .blog-top-nav .nav-actions a.spotify-pill:not([hidden]) {
+  .spotify-box b {
+    margin-right: 4px;
+    color: var(--paper-ink-faint);
+    font-weight: 700;
+  }
+
+  .spotify-wrap[data-open='true'] .spotify-box {
+    opacity: 1;
+  }
+
+  @media (hover: hover) {
+    .spotify-wrap:hover .spotify-box {
+      opacity: 1;
+    }
+  }
+
+  /* Top bar: box drops below the record, right-aligned to it. */
+  .spotify-wrap[data-variant='nav'] .spotify-box {
+    top: calc(100% + 14px);
+    right: 0;
+    transform: translateY(-4px);
+  }
+
+  .spotify-wrap[data-variant='nav'][data-open='true'] .spotify-box,
+  .spotify-wrap[data-variant='nav']:hover .spotify-box {
+    transform: translateY(0);
+  }
+
+  /* Narrow screens: record floats above the Discord ball, box opens to its right. */
+  .spotify-wrap[data-variant='dock'] {
+    position: fixed;
+    bottom: 72px;
+    left: 23px;
+    z-index: 40;
+  }
+
+  .spotify-wrap[data-variant='dock'] .spotify-box {
+    bottom: 0;
+    white-space: normal;
+    left: calc(100% + 8px);
+  }
+
+  .spotify-wrap[data-variant='nav']:not([hidden]) {
+    display: none;
+  }
+
+  @media (min-width: 960px) {
+    .spotify-wrap[data-variant='nav']:not([hidden]) {
+      display: block;
+    }
+
+    .spotify-wrap[data-variant='dock'] {
       display: none;
+    }
+  }
+
+  @keyframes spotify-spin {
+    to {
+      transform: rotate(360deg);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .spotify-record {
+      animation: none;
     }
   }
 </style>

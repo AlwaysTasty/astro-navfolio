@@ -196,6 +196,13 @@ icon = "github"
 tooltip = "https://github.com/AlwaysTasty"
 copy = false
 
+# Empty tooltip hides the icon. Paste the Spotify profile URL here to show it.
+[[config.home.links]]
+label = "Spotify"
+icon = "spotify"
+tooltip = "https://open.spotify.com/user/derrickwhw?si=ab049866831a4aae"
+copy = false
+
 [[config.home.doing]]
 text = "Following SLS REGAL trial updates for catalyst-driven opportunities"
 mark = "01"
