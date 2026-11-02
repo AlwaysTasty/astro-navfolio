@@ -1,0 +1,344 @@
+---
+// Private-ish temp file host: unlinked, noindex, passphrase to upload or manage. Downloads are plain links.
+import BaseHead from '../components/BaseHead.astro';
+import { getSiteConfig } from '../data/site';
+import { getHtmlLang } from '../utils/ui-text';
+
+const siteConfig = await getSiteConfig();
+---
+
+<!doctype html>
+<html lang={getHtmlLang(siteConfig)} data-palette={siteConfig.theme.palette}>
+  <head>
+    <BaseHead title="Files" description="Temporary file transfer" />
+    <meta name="robots" content="noindex, nofollow" />
+  </head>
+  <body data-pagefind-ignore>
+    <main class="files-shell">
+      <form class="panel" id="login" hidden>
+        <h1>Files</h1>
+        <input
+          id="passphrase"
+          type="password"
+          autocomplete="current-password"
+          placeholder="Passphrase"
+          required
+        />
+        <button class="btn primary" type="submit">Unlock</button>
+        <p class="note" id="login-error" role="alert"></p>
+      </form>
+
+      <section id="app" hidden>
+        <h1>Files</h1>
+        <div class="panel">
+          <div class="row">
+            <label for="expiry">Keep for</label>
+            <select id="expiry">
+              <option value="1">1 day</option>
+              <option value="3">3 days</option>
+              <option value="7" selected>7 days</option>
+              <option value="31">31 days</option>
+              <option value="0">Permanent</option>
+            </select>
+            <button class="btn primary" type="button" id="pick">Choose files</button>
+            <input id="file" type="file" multiple hidden />
+          </div>
+          <div class="drop" id="drop">or drop files here</div>
+          <progress id="progress" max="100" value="0" hidden></progress>
+          <p class="note" id="status" role="status"></p>
+          <p class="note" id="usage"></p>
+        </div>
+        <ul class="list" id="list"></ul>
+      </section>
+    </main>
+  </body>
+</html>
+
+<script>
+  import { upload } from '@vercel/blob/client';
+
+  interface FileItem {
+    url: string;
+    downloadUrl: string;
+    name: string;
+    size: number;
+    uploadedAt: string;
+    expires: number;
+  }
+
+  const $ = <T extends HTMLElement>(id: string) => document.getElementById(id) as T;
+  const login = $<HTMLFormElement>('login');
+  const app = $('app');
+  const status = $('status');
+  let maxFile = 100 * 1024 * 1024;
+
+  const mb = (n: number) => `${(n / 1024 / 1024).toFixed(n < 10 * 1024 * 1024 ? 1 : 0)} MB`;
+
+  const expiryLabel = (expires: number) => {
+    if (!expires) return 'Permanent';
+    const days = Math.ceil((expires - Date.now() / 1000) / 86400);
+    return days <= 0 ? 'Expires today' : `Expires in ${days} day${days === 1 ? '' : 's'}`;
+  };
+
+  const show = (signedIn: boolean) => {
+    login.hidden = signedIn;
+    app.hidden = !signedIn;
+  };
+
+  const refresh = async () => {
+    const res = await fetch('/api/files/list');
+    if (res.status === 401) return show(false);
+    if (!res.ok) {
+      show(true);
+      status.textContent = 'Could not load files.';
+      return;
+    }
+    show(true);
+    const data = await res.json();
+    maxFile = data.maxFile;
+    $('usage').textContent =
+      `${mb(data.used)} of ${mb(data.limit)} used · max ${mb(data.maxFile)} per file`;
+    const list = $('list');
+    list.replaceChildren(
+      ...(data.files as FileItem[]).map((file) => {
+        const li = document.createElement('li');
+        li.className = 'item';
+        const info = document.createElement('div');
+        const name = document.createElement('strong');
+        name.textContent = file.name;
+        const meta = document.createElement('span');
+        meta.textContent = `${mb(file.size)} · ${expiryLabel(file.expires)}`;
+        info.append(name, meta);
+        const actions = document.createElement('div');
+        actions.className = 'actions';
+        const copy = button('Copy link', async () => {
+          await navigator.clipboard.writeText(file.url);
+          copy.textContent = 'Copied';
+          setTimeout(() => (copy.textContent = 'Copy link'), 1200);
+        });
+        const download = document.createElement('a');
+        download.className = 'btn';
+        download.href = file.downloadUrl;
+        download.textContent = 'Download';
+        const remove = button('Delete', async () => {
+          if (!confirm(`Delete ${file.name}?`)) return;
+          await fetch('/api/files/delete', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ url: file.url }),
+          });
+          void refresh();
+        });
+        actions.append(copy, download, remove);
+        li.append(info, actions);
+        return li;
+      }),
+    );
+  };
+
+  const button = (label: string, onClick: () => void) => {
+    const el = document.createElement('button');
+    el.type = 'button';
+    el.className = 'btn';
+    el.textContent = label;
+    el.addEventListener('click', onClick);
+    return el;
+  };
+
+  const uploadFiles = async (files: FileList | File[]) => {
+    const days = Number($<HTMLSelectElement>('expiry').value);
+    const exp = days ? Math.floor(Date.now() / 1000) + days * 86400 : 0;
+    const bar = $<HTMLProgressElement>('progress');
+    for (const file of files) {
+      if (file.size > maxFile) {
+        status.textContent = `${file.name} is over ${mb(maxFile)}.`;
+        continue;
+      }
+      status.textContent = `Uploading ${file.name}…`;
+      bar.hidden = false;
+      bar.value = 0;
+      try {
+        await upload(`exp-${exp}/${file.name.replace(/[\\/]/g, '_')}`, file, {
+          access: 'public',
+          handleUploadUrl: '/api/files/upload',
+          multipart: file.size > 8 * 1024 * 1024,
+          onUploadProgress: ({ percentage }) => (bar.value = percentage),
+        });
+        status.textContent = `Uploaded ${file.name}.`;
+      } catch (error) {
+        status.textContent = `Upload failed: ${(error as Error).message}`;
+      }
+    }
+    bar.hidden = true;
+    void refresh();
+  };
+
+  login.addEventListener('submit', async (event) => {
+    event.preventDefault();
+    const res = await fetch('/api/files/login', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ passphrase: $<HTMLInputElement>('passphrase').value }),
+    });
+    $('login-error').textContent = res.ok ? '' : 'Wrong passphrase.';
+    if (res.ok) void refresh();
+  });
+
+  const input = $<HTMLInputElement>('file');
+  $('pick').addEventListener('click', () => input.click());
+  input.addEventListener('change', () => {
+    if (input.files?.length) void uploadFiles(input.files);
+    input.value = '';
+  });
+  const drop = $('drop');
+  for (const type of ['dragenter', 'dragover']) {
+    drop.addEventListener(type, (e) => {
+      e.preventDefault();
+      drop.classList.add('over');
+    });
+  }
+  for (const type of ['dragleave', 'drop']) {
+    drop.addEventListener(type, (e) => {
+      e.preventDefault();
+      drop.classList.remove('over');
+    });
+  }
+  drop.addEventListener('drop', (e) => {
+    if ((e as DragEvent).dataTransfer?.files.length)
+      void uploadFiles((e as DragEvent).dataTransfer!.files);
+  });
+
+  void refresh();
+</script>
+
+<style is:global>
+  /* Global because the file list is built in JS and so carries no scoped-style attribute. */
+  .files-shell [hidden] {
+    display: none;
+  }
+
+  .files-shell {
+    width: min(100% - 32px, 640px);
+    margin: 0 auto;
+    padding: 48px 0 72px;
+    color: var(--paper-ink);
+  }
+
+  h1 {
+    margin: 0 0 16px;
+    font-size: 1.6rem;
+  }
+
+  .panel {
+    display: grid;
+    gap: 12px;
+    padding: 18px;
+    border: 1px solid var(--paper-line);
+    border-radius: 14px;
+    background: var(--paper-surface);
+    box-shadow: var(--paper-shadow);
+  }
+
+  .row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    align-items: center;
+  }
+
+  input[type='password'],
+  select {
+    padding: 9px 12px;
+    border: 1px solid var(--paper-line-strong);
+    border-radius: 8px;
+    background: var(--paper-bg);
+    color: var(--paper-ink);
+    font: inherit;
+  }
+
+  .btn {
+    padding: 8px 14px;
+    border: 1px solid var(--paper-line-strong);
+    border-radius: 8px;
+    background: var(--paper-control);
+    color: var(--paper-ink);
+    font: inherit;
+    font-size: 0.86rem;
+    text-decoration: none;
+    cursor: pointer;
+  }
+
+  .btn:hover {
+    background: var(--paper-control-hover);
+    color: var(--paper-accent);
+  }
+
+  .btn.primary {
+    border-color: transparent;
+    background: var(--paper-accent);
+    color: var(--paper-bg);
+  }
+
+  .btn.primary:hover {
+    color: var(--paper-bg);
+    opacity: 0.9;
+  }
+
+  .drop {
+    padding: 22px;
+    border: 1px dashed var(--paper-line-strong);
+    border-radius: 10px;
+    color: var(--paper-ink-soft);
+    text-align: center;
+  }
+
+  .drop.over {
+    border-color: var(--paper-accent);
+    color: var(--paper-accent);
+  }
+
+  progress {
+    width: 100%;
+  }
+
+  .note {
+    margin: 0;
+    color: var(--paper-ink-soft);
+    font-size: 0.82rem;
+  }
+
+  .list {
+    display: grid;
+    gap: 10px;
+    padding: 0;
+    margin: 18px 0 0;
+    list-style: none;
+  }
+
+  .item {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 14px;
+    border: 1px solid var(--paper-line);
+    border-radius: 12px;
+    background: var(--paper-surface);
+  }
+
+  .item strong {
+    display: block;
+    overflow-wrap: anywhere;
+  }
+
+  .item span {
+    color: var(--paper-ink-soft);
+    font-size: 0.8rem;
+  }
+
+  .actions {
+    display: flex;
+    gap: 8px;
+  }
+</style>

@@ -69,7 +69,11 @@ export default defineConfig({
     remarkPlugins: astroPluginConfig.remarkPlugins,
     rehypePlugins: astroPluginConfig.rehypePlugins,
   },
-  integrations: [...astroPluginConfig.integrations, mdx(), sitemap()],
+  integrations: [
+    ...astroPluginConfig.integrations,
+    mdx(),
+    sitemap({ filter: (page) => !new URL(page).pathname.startsWith('/files') }),
+  ],
 
   vite: {
     plugins: [tailwindcss()],

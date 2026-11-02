@@ -5,9 +5,20 @@
   "redirects": [
     {
       "source": "/",
-      "has": [{ "type": "host", "value": "intro.huiwen.fyi" }],
+      "has": [
+        {
+          "type": "host",
+          "value": "intro.huiwen.fyi"
+        }
+      ],
       "destination": "/card",
       "permanent": false
+    }
+  ],
+  "crons": [
+    {
+      "path": "/api/files/cleanup",
+      "schedule": "0 20 * * *"
     }
   ]
 }
