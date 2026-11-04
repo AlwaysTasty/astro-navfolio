@@ -1,20 +1,20 @@
 {
-  "name": "navfolio",
-  "short_name": "navfolio",
-  "description": "A personal navigation portfolio starter built with Astro.",
-  "start_url": ".",
+  "name": "Wang Huiwen",
+  "short_name": "Huiwen",
+  "description": "Computing & Finance at NTU: equity research and systems development.",
+  "start_url": "/",
   "display": "standalone",
-  "background_color": "#ffffff",
-  "theme_color": "#ffffff",
+  "background_color": "#fdfdf9",
+  "theme_color": "#fdfdf9",
   "icons": [
     {
-      "src": "web-app-manifest-192x192.png",
+      "src": "/web-app-manifest-192x192.png",
       "sizes": "192x192",
       "type": "image/png",
       "purpose": "any"
     },
     {
-      "src": "web-app-manifest-512x512.png",
+      "src": "/web-app-manifest-512x512.png",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "any"

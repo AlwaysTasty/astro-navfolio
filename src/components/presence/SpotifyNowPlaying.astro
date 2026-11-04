@@ -16,7 +16,7 @@ const { variant } = Astro.props;
     aria-expanded="false"
   >
     <span class="spotify-record" aria-hidden="true">
-      <img data-spotify-art alt="" width="14" height="14" />
+      <img data-spotify-art alt="" width="42" height="42" />
     </span>
   </button>
   <div class="spotify-box" role="status">
@@ -101,27 +101,20 @@ const { variant } = Astro.props;
     border: 0;
     background: transparent;
     cursor: pointer;
+    filter: drop-shadow(0 1px 3px rgba(0, 0, 0, 0.35));
   }
 
+  /* The album art is the whole disc; the mask leaves the centre empty like a record's hole. */
   .spotify-record {
     position: relative;
     display: grid;
-    place-items: center;
-    width: 34px;
-    height: 34px;
+    flex: 0 0 auto;
+    width: 42px;
+    height: 42px;
+    overflow: hidden;
     border-radius: 50%;
-    background:
-      radial-gradient(circle, transparent 0 24%, rgba(0, 0, 0, 0.25) 24% 26%, transparent 26%),
-      conic-gradient(
-        from 20deg,
-        transparent 0 18%,
-        rgba(255, 255, 255, 0.22) 25%,
-        transparent 32% 68%,
-        rgba(255, 255, 255, 0.16) 75%,
-        transparent 82%
-      ),
-      repeating-radial-gradient(circle, #0f0f10 0 1.2px, #232325 1.2px 2.4px);
-    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.35);
+    background: repeating-radial-gradient(circle, #0f0f10 0 1.2px, #232325 1.2px 2.4px);
+    mask: radial-gradient(circle closest-side, transparent 0 19%, #000 20%);
     animation: spotify-spin 4s linear infinite;
   }
 
@@ -129,25 +122,28 @@ const { variant } = Astro.props;
     animation-play-state: paused;
   }
 
-  /* Album art is the record's centre label; the dot is the spindle hole. */
   .spotify-record img {
-    width: 14px;
-    height: 14px;
-    border-radius: 50%;
+    grid-area: 1 / 1;
+    width: 100%;
+    height: 100%;
     object-fit: cover;
   }
 
   .spotify-record img[hidden] {
-    display: block;
-    background: var(--paper-accent);
+    display: none;
   }
 
+  /* Light sheen so the spin reads even on flat artwork. */
   .spotify-record::after {
-    position: absolute;
-    width: 3px;
-    height: 3px;
-    border-radius: 50%;
-    background: var(--paper-surface, #fff);
+    grid-area: 1 / 1;
+    background: conic-gradient(
+      from 20deg,
+      transparent 0 18%,
+      rgba(255, 255, 255, 0.28) 25%,
+      transparent 32% 68%,
+      rgba(255, 255, 255, 0.2) 75%,
+      transparent 82%
+    );
     content: '';
   }
 
@@ -209,6 +205,11 @@ const { variant } = Astro.props;
     bottom: 72px;
     left: 23px;
     z-index: 40;
+  }
+
+  .spotify-wrap[data-variant='dock'] .spotify-record {
+    width: 50px;
+    height: 50px;
   }
 
   .spotify-wrap[data-variant='dock'] .spotify-box {

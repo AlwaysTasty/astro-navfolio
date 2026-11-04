@@ -2,6 +2,7 @@
 import BaseHead from '../components/BaseHead.astro';
 import BlogTopNav from '../components/blog/BlogTopNav.astro';
 import FullFontWarmup from '../components/FullFontWarmup.astro';
+import Footer from '../components/Footer.astro';
 import PresenceDock from '../components/presence/PresenceDock.astro';
 import ScrollToTopButton from '../components/ScrollToTopButton.astro';
 import { getSiteConfig } from '../data/site';
@@ -27,6 +28,7 @@ const htmlLang = getHtmlLang(siteConfig);
   <body>
     <BlogTopNav />
     <slot />
+    <Footer />
     <ScrollToTopButton />
     <PresenceDock />
     <FullFontWarmup />

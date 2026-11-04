@@ -55,7 +55,7 @@ const siteConfig = await getSiteConfig();
 </html>
 
 <script>
-  import { upload } from '@vercel/blob/client';
+  import { uploadPresigned } from '@vercel/blob/client';
 
   interface FileItem {
     url: string;
@@ -90,7 +90,7 @@ const siteConfig = await getSiteConfig();
     if (res.status === 401) return show(false);
     if (!res.ok) {
       show(true);
-      status.textContent = 'Could not load files.';
+      status.textContent = (await res.json().catch(() => ({}))).error ?? 'Could not load files.';
       return;
     }
     show(true);
@@ -158,7 +158,11 @@ const siteConfig = await getSiteConfig();
       bar.hidden = false;
       bar.value = 0;
       try {
-        await upload(`exp-${exp}/${file.name.replace(/[\\/]/g, '_')}`, file, {
+        // The random part keeps the public link unguessable; the server checks this exact shape.
+        const id = Array.from(crypto.getRandomValues(new Uint8Array(8)), (b) =>
+          b.toString(16).padStart(2, '0'),
+        ).join('');
+        await uploadPresigned(`exp-${exp}/${id}-${file.name.replace(/[\\/]/g, '_')}`, file, {
           access: 'public',
           handleUploadUrl: '/api/files/upload',
           multipart: file.size > 8 * 1024 * 1024,

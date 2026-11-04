@@ -2,13 +2,16 @@ import { MAX_FILE, STORAGE_LIMIT, expiryOf, isAuthed, listAll } from '../_lib/fi
 
 export default async function handler(req, res) {
   if (!isAuthed(req)) return res.status(401).json({ error: 'Not signed in' });
+  if (!process.env.BLOB_STORE_ID && !process.env.BLOB_READ_WRITE_TOKEN) {
+    return res.status(500).json({ error: 'Blob store not connected: BLOB_STORE_ID is missing.' });
+  }
   try {
     const blobs = await listAll();
     const files = blobs
       .map((b) => ({
         url: b.url,
         downloadUrl: b.downloadUrl,
-        name: b.pathname.replace(/^exp-\d+\//, ''),
+        name: b.pathname.replace(/^exp-\d+\/[0-9a-f]{16}-/, ''),
         size: b.size,
         uploadedAt: b.uploadedAt,
         expires: expiryOf(b.pathname) ?? 0,
